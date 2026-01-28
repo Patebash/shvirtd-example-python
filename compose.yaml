@@ -1,0 +1,50 @@
+include:
+  - proxy.yaml
+
+services:
+  web:
+    image: cr.yandex/crpvnqmdlrn9pui9ssrt/fastapi-app:latest
+    container_name: web
+    restart: always
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    networks:
+      backend:
+        ipv4_address: 172.20.0.5
+
+    env_file:
+      - .env
+
+    environment:
+      DB_HOST: db
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWORD: ${MYSQL_PASSWORD}
+      DB_NAME: ${MYSQL_DATABASE}
+
+  db:
+    image: mysql:8
+    container_name: db
+    restart: always
+
+    networks:
+      backend:
+        ipv4_address: 172.20.0.10
+
+    healthcheck:
+      test: ["CMD", "mysql", "-uapp", "-p${MYSQL_PASSWORD}", "-e", "SELECT 1", "${MYSQL_DATABASE}"]
+      interval: 30s
+      retries: 5
+      start_period: 60s
+
+    env_file:
+      - .env
+
+networks:
+  backend:
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 172.20.0.0/24

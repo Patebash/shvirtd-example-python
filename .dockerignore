@@ -1,1 +1,17 @@
-
+# Игнорируем Git
+.git
+.gitignore
+# Игнорируем файлы проекта
+Dockerfile
+Dockerfile.python
+.dockerignore
+.env
+fastapi_app_nodocker
+.git
+.gitignore
+haproxy
+LICENSE
+nginx
+proxy.yaml
+README.md
+schema.pdf
